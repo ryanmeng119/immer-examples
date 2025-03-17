@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 設定方式 1 -->
+    <!-- <script src="https://unpkg.com/immer@9.0.21/dist/immer.umd.production.min.js"></script> -->
+
+    <!-- 設定方式 2 -->
+    <script type="importmap">
+      {
+        "imports": {
+          "immer": "./node_modules/immer/dist/immer.mjs"
+        }
+      }
+    </script>
+    <script>
+      const process = {
+        env: {
+          NODE_ENV: "production",
+        },
+      };
+    </script>
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 設定方式 1 的引入方式 -->
+    <!-- <script>
+      const { produce } = window.immer;
+      const baseState = {
+        count: 0,
+        todos: ["學習 React", "學習 Redux"],
+      };
+
+      const nextState = produce(baseState, (draft) => {
+        draft.count++; // 增加計數
+        draft.todos.push("學習 Immer"); // 添加新的 todo
+      });
+
+      console.log(baseState.count); // 0 - 原始狀態未變
+      console.log(nextState.count); // 1 - 新狀態已更新
+      console.log(baseState !== nextState); // true - 產生了新的狀態對象
+    </script> -->
+
+    <!-- 設定方式 2 的引入方式 -->
+    <script type="module">
+      import { produce } from "immer";
+
+      const baseState = {
+        count: 0,
+        todos: ["學習 React", "學習 Redux"],
+      };
+
+      const nextState = produce(baseState, (draft) => {
+        draft.count++; // 增加計數
+        draft.todos.push("學習 Immer"); // 添加新的 todo
+      });
+
+      const user = {
+        profile: {
+          name: "小明",
+          age: 25,
+          address: {
+            city: "New York",
+            country: "USA",
+          },
+        },
+      };
+
+      console.log(baseState.count); // 0 - 原始狀態未變
+      console.log(nextState.count); // 1 - 新狀態已更新
+      console.log(baseState !== nextState); // true - 產生了新的狀態對象
+    </script>
+  </body>
+</html>

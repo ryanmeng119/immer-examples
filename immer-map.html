@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="importmap">
+      {
+        "imports": {
+          "immer": "./node_modules/immer/dist/immer.mjs",
+          "lodash": "https://cdn.jsdelivr.net/npm/lodash-es@4.17.21/lodash.js"
+        }
+      }
+    </script>
+    <script>
+      const process = {
+        env: {
+          NODE_ENV: "production",
+        },
+      };
+    </script>
+    <title>Immer 練習</title>
+  </head>
+  <body>
+    <h1>Immer 練習 (有無使用 immer 的處理差異)</h1>
+    <p>也可以打開開發者工具的 Console 頁籤查看結果</p>
+
+    <h2 id="title"></h2>
+    <div style="display: flex; gap: 8px">
+      <div style="border-right: solid; padding: 4px 20px; flex: 1">
+        <h3 style="color: rgb(190 18 60 / var(--tw-text-opacity, 1))">
+          base-state
+        </h3>
+        <pre id="basic-state"></pre>
+      </div>
+      <div style="border-right: solid; padding: 4px 20px; flex: 1">
+        <h3 style="color: rgb(190 18 60 / var(--tw-text-opacity, 1))">
+          setState
+        </h3>
+        <pre id="next-state-clone"></pre>
+      </div>
+      <div style="padding: 4px 20px; flex: 1">
+        <h3 style="color: rgb(190 18 60 / var(--tw-text-opacity, 1))">
+          getState
+        </h3>
+        <pre id="next-state-immer"></pre>
+      </div>
+    </div>
+
+    <script type="module">
+      import { produce, enableMapSet } from "immer";
+      enableMapSet();
+
+      const baseState = new Map();
+
+      // 生成一個新的 map
+      const setState = produce(baseState, (draft) => {
+        draft.set("michel", { name: "Michel Weststrate", country: "NL" });
+      });
+
+      // 基於上一個 map 生成一個新的 map
+      const getState = produce(setState, (draft) => {
+        draft.get("michel").country = "UK";
+      });
+
+      console.log(baseState, setState, getState);
+
+      document.getElementById("basic-state").textContent = JSON.stringify(
+        Array.from(baseState),
+        null,
+        2
+      );
+
+      document.getElementById("next-state-clone").textContent = JSON.stringify(
+        Array.from(setState),
+        null,
+        2
+      );
+      document.getElementById("next-state-immer").textContent = JSON.stringify(
+        Array.from(getState),
+        null,
+        2
+      );
+    </script>
+  </body>
+</html>

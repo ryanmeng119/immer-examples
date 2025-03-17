@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="importmap">
+      {
+        "imports": {
+          "immer": "./node_modules/immer/dist/immer.mjs",
+          "lodash": "https://cdn.jsdelivr.net/npm/lodash-es@4.17.21/lodash.js"
+        }
+      }
+    </script>
+    <script>
+      const process = {
+        env: {
+          NODE_ENV: "production",
+        },
+      };
+    </script>
+    <title>Immer 練習</title>
+  </head>
+  <body>
+    <h1>Immer 練習 (有無使用 immer 的處理差異)</h1>
+    <p>也可以打開開發者工具的 Console 頁籤查看結果</p>
+
+    <h2 id="title"></h2>
+    <div style="display: flex; gap: 8px">
+      <div style="border-right: solid; padding: 4px 20px; flex: 1">
+        <h3 style="color: rgb(190 18 60 / var(--tw-text-opacity, 1))">
+          basic-state
+        </h3>
+        <pre id="basic-state"></pre>
+      </div>
+      <div style="border-right: solid; padding: 4px 20px; flex: 1">
+        <h3 style="color: rgb(190 18 60 / var(--tw-text-opacity, 1))">
+          next-state (cloneDeep)
+        </h3>
+        <pre id="next-state-clone"></pre>
+      </div>
+      <div style="padding: 4px 20px; flex: 1">
+        <h3 style="color: rgb(190 18 60 / var(--tw-text-opacity, 1))">
+          next-state (immer)
+        </h3>
+        <pre id="next-state-immer"></pre>
+      </div>
+    </div>
+
+    <!-- <script type="module">
+      import { produce, setAutoFreeze } from "immer";
+      // 關閉凍結功能
+      // setAutoFreeze(false)
+
+      const baseState = {
+        user: {
+          profile: {
+            name: "小明",
+            address: {
+              city: "台北",
+            },
+          },
+        },
+      };
+      // 傳統展開運算子
+      const newState = {
+        ...baseState,
+        user: {
+          ...baseState.user,
+          profile: {
+            ...baseState.user.profile,
+            address: {
+              ...baseState.user.profile.address,
+              city: "高雄",
+            },
+          },
+        },
+      };
+
+      //   console.log(baseState.user.profile, newState.user.profile);
+
+      const immerNewState = produce(baseState, (draft) => {
+        draft.user.profile.name = "小華";
+      });
+
+      console.log(baseState.user.profile, immerNewState.user.profile);
+
+      document.getElementById("basic-state").textContent = JSON.stringify(
+        baseState,
+        null,
+        2
+      );
+      
+      document.getElementById("next-state-immer").textContent = JSON.stringify(
+        immerNewState,
+        null,
+        2
+      );
+
+      // 因為 immer 自動凍結的關係，所以這裡會報錯
+      // Uncaught TypeError: Cannot assign to read only property 'city' of object '#<Object>'
+      //   nextState.user.profile.address.city = "高雄";
+      //   console.log(baseState.user.profile, nextState.user.profile);
+    </script> -->
+
+    <!-- <script type="module">
+      import { produce, setAutoFreeze } from "immer";
+      import { cloneDeep } from "lodash";
+
+      const title =
+        '維持原資料不變，另外產生一個將 id 1 的城市變更為 "Boston"，並新增一個新的 User';
+      document.getElementById("title").textContent = title;
+
+      const baseState = {
+        users: [
+          {
+            id: 1,
+            name: "John",
+            address: {
+              city: "New York",
+              country: "USA",
+            },
+          },
+          {
+            id: 2,
+            name: "Amy",
+            address: {
+              city: "New York",
+              country: "USA",
+            },
+          },
+        ],
+      };
+
+      // 使用 cloneDeep
+      const cloneNewState = cloneDeep(baseState);
+      const userToUpdate = cloneNewState.users.find((user) => user.id === 1);
+      if (userToUpdate) {
+        userToUpdate.address.city = "Boston";
+      }
+      cloneNewState.users.push({
+        id: 3,
+        name: "Tom (CloneDeep)",
+        address: {
+          city: "Chicago",
+          country: "USA",
+        },
+      });
+
+      const immerNewState = produce(baseState, (draft) => {
+        const findUser = draft.users.find((user) => user.id === 1);
+        if (findUser) {
+          findUser.address.city = "Boston";
+        }
+
+        draft.users.push({
+          id: 3,
+          name: "Tom (Immer)",
+          address: {
+            city: "Los Angeles",
+            country: "USA",
+          },
+        });
+      });
+
+      document.getElementById("basic-state").textContent = JSON.stringify(
+        baseState,
+        null,
+        2
+      );
+
+      document.getElementById("next-state-clone").textContent = JSON.stringify(
+        cloneNewState,
+        null,
+        2
+      );
+      document.getElementById("next-state-immer").textContent = JSON.stringify(
+        immerNewState,
+        null,
+        2
+      );
+
+      console.log(baseState, cloneNewState, immerNewState);
+    </script> -->
+
+    <script type="module">
+      import { produce, setAutoFreeze } from "immer";
+
+      const baseState = [
+        {
+          id: "JavaScript",
+          title: "Learn TypeScript",
+          done: true,
+        },
+        {
+          id: "Immer",
+          title: "Try Immer",
+          done: false,
+        },
+      ];
+      
+      //  state 在這邊只用來傳遞給 produce 的第一個參數，因此可以縮寫成下方的形式
+      function toggleTodo(state, id) {
+        return produce(state, (draft) => {
+          const todo = draft.find((todo) => todo.id === id);
+          todo.done = !todo.done;
+        });
+      }
+      //   const toggleTodo = produce((draft, id) => {
+      //     const todo = baseState.find((todo) => todo.id === id);
+      //     todo.done = !todo.done;
+      //   });
+
+      const nextState = toggleTodo(baseState, "Immer");
+
+      document.getElementById("basic-state").textContent = JSON.stringify(
+        baseState,
+        null,
+        2
+      );
+
+      document.getElementById("next-state-immer").textContent = JSON.stringify(
+        nextState,
+        null,
+        2
+      );
+    </script>
+  </body>
+</html>
